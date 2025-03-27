@@ -5,6 +5,7 @@ const url = import.meta.env.VITE_BLOB_URL
 const token = import.meta.env.VITE_SAS_TOKEN
 const path = '/disaster-analysis/stimuli/data_original/train/1002-Boca-Grande.2/'
 
+'https://disasteranalysis.blob.core.windows.net/disaster-analysis/stimuli/data_original/train/1002-Boca-Grande.2/stimuli_0.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-11-08T22:18:28Z&st=2025-03-25T13:18:28Z&sip=0.0.0.0-255.255.255.255&spr=https&sig=8dre37EhqprjpZn4Qqv8rdL4uhaIYUoNy%2BLjGEOC1s8%3D'
 const preloadSrcList: string[] = Array.from({ length: 10 }, (_, i) => 
   `${url}${path}stimuli_${i}.png?${token}`
 );

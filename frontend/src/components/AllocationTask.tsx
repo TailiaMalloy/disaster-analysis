@@ -93,7 +93,7 @@ const ZoomableImage = forwardRef<ZoomableImageHandle, ZoomableImageProps>(({ ima
   );
 });
 
-const UnaryTask: React.FC = () => {
+const AllocationTask: React.FC = () => {
   const { imagesPreloaded: bigImages } = useImagePreloader(bigImagesList);
 
   const zoomableImageRef1 = useRef<ZoomableImageHandle>(null);
@@ -143,4 +143,4 @@ const UnaryTask: React.FC = () => {
   );
 };
 
-export default UnaryTask;
+export default AllocationTask;
