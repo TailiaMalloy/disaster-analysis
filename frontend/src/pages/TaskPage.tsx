@@ -22,13 +22,31 @@ const TaskPage: React.FC = () => {
 
   const zoomableImageRef1 = useRef<ZoomableImageHandle>(null);
   const zoomableImageRef2 = useRef<ZoomableImageHandle>(null);
-  const [isSubmitted, setIsSubmitted] = useState(false)
   const alertConfirmation = useRef<alertConfirmationHandle>(null);
 
-  const resetImage = (id: string) => {
-    if (id === "Image1") zoomableImageRef1.current?.resetZoom();
-    else if (id === "Image2") zoomableImageRef2.current?.resetZoom();
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [annotationsShowing, setAnnotationsShowing] = useState(false)
+  const [beforeImageShowing, setBeforeImageShowing] = useState(false)
+
+  const resetImages = () => {
+    zoomableImageRef1.current?.resetZoom();
+    zoomableImageRef2.current?.resetZoom();
   };
+  const switchAnnotations = () => {
+    if(annotationsShowing){
+      setAnnotationsShowing(false)
+    }else{
+      setAnnotationsShowing(true)
+    }
+  };
+
+  const switchBeforeImage = () => {
+    if(beforeImageShowing){
+      setBeforeImageShowing(false)
+    }else{
+      setBeforeImageShowing(true)
+    }
+  }
 
   const submit = () => {
     alertConfirmation.current?.showAlert(async () => {
@@ -61,26 +79,65 @@ return (
   <div style={{ paddingLeft: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
     { isSubmitted ?
       (
-        <div><h2>Select which of the two images you would prioritize for disaster relief:</h2></div>
+        <div style={{paddingLeft:'200px', paddingRight:'200px'}}>
+          <h1>Select which of the highlighted structures you would prioritize for additional damage assessment:</h1>
+        </div>
       ) : (
-        <div><h2>Evaluate the level of damage with respect to the following damage types:</h2></div>
+        <div style={{paddingLeft:'200px', paddingRight:'200px'}}>
+          <h1>Evaluate the level of damage of the highlighted structure with respect to the following damage types:</h1>
+          </div>
       )
     }
     
     <h2>Zoom to scroll in the image, click and drag to pan in the image.</h2>
     <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
         <button 
-        onClick={() => resetImage("Image1")} 
+        onClick={() => resetImages()} 
         style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
         >
-        <a style={{color: 'white'}}> Reset Left Image Zoom  </a>
+        <a style={{color: 'white'}}> Reset Image Zooms  </a>
         </button>
-        <button 
-        onClick={() => resetImage("Image2")} 
-        style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
-        >
-        <a style={{color: 'white'}}> Reset Right Image Zoom  </a> 
-        </button>
+        {annotationsShowing ? (
+          <div>
+            <button 
+            onClick={() => switchAnnotations()} 
+            style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
+            >
+            <a style={{color: 'white'}}> Show Image Annotations  </a>
+            </button>
+          </div>
+        ) : (
+          <div>
+            <button 
+            onClick={() => switchAnnotations()} 
+            style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
+            >
+            <a style={{color: 'white'}}> Hide Image Annotations  </a>
+            </button>
+          </div>
+        )
+        }
+        {beforeImageShowing ? (
+          <div>
+            <button 
+            onClick={() => switchBeforeImage()} 
+            style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
+            >
+            <a style={{color: 'white'}}> Show Pre-Disaster Image  </a>
+            </button>
+          </div>
+        ) : (
+          <div>
+            <button 
+            onClick={() => switchBeforeImage()} 
+            style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
+            >
+            <a style={{color: 'white'}}> Show Post-Disaster Image  </a>
+            </button>
+          </div>
+        )
+        }
+        
     </div>
 
     <AlertConfirmation ref={alertConfirmation} />
@@ -131,8 +188,18 @@ return (
             <div>
             </div>
         </div>
-        <ZoomableImage ref={zoomableImageRef1} image={annotatedImages[0]} altText="Image 1" />
-        <ZoomableImage ref={zoomableImageRef2} image={annotatedImages[1]} altText="Image 2" />
+        {annotationsShowing ? (
+          <div> 
+            <ZoomableImage ref={zoomableImageRef1} image={annotatedImages[0]} altText="Image 1" />
+            <ZoomableImage ref={zoomableImageRef2} image={annotatedImages[1]} altText="Image 2" />
+          </div>
+        ) : (
+          <div> 
+            <ZoomableImage ref={zoomableImageRef1} image={originalImages[0]} altText="Image 1" />
+            <ZoomableImage ref={zoomableImageRef2} image={originalImages[1]} altText="Image 2" />
+          </div>
+        )}
+        
 
         {/* Range Bars Container */}
         <div style={{ width: '256px', display: 'flex', flexDirection: 'column', gap: '15px', marginLeft: '20px' }}>
