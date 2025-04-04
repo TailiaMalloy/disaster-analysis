@@ -162,6 +162,13 @@ const MainTask: React.FC = () => {
     zoomableImageRef1.current?.resetZoom();
   };
 
+  const  hideLabels = () => {
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach((button) => {
+      button.classList.toggle('hidden');
+    });
+  }
+
   return (
     <div className="relative flex flex-col items-center justify-center gap-8 bg-gray-100 p-4">
         {/* Reset Button Above the Image */}
@@ -174,7 +181,7 @@ const MainTask: React.FC = () => {
             </button>
 
             <button 
-            onClick={resetImage} 
+            onClick={hideLabels} 
             className="bg-blue-500 text-white py-2 px-4 rounded-lg cursor-pointer"
             >
             Hide Area Labels
