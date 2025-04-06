@@ -5,7 +5,7 @@ import ZoomableImage, {ZoomableImageHandle} from '../components/zoomableImage.ts
 const url = import.meta.env.VITE_BLOB_URL
 const token = import.meta.env.VITE_SAS_TOKEN
 const annotatedPath = '/disaster-analysis/stimuli/data_original/train/1002-Boca-Grande.2/'
-const originalPath = '/disaster-analysis/stimuli/data_original/train/1002-Boca-Grande.2/'
+const originalPath = '/disaster-analysis/stimuli/data_annotated/train/1002-Boca-Grande.2/'
 
 const annotatedImagesList: string[] = Array.from({ length: 5 }, (_, i) => 
   `${url}${annotatedPath}stimuli_${i}.png?${token}`
@@ -25,7 +25,7 @@ const TaskPage: React.FC = () => {
   const alertConfirmation = useRef<alertConfirmationHandle>(null);
 
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [predisasterShowing, setpredisasterShowing] = useState(false)
+  const [annotationsShowing, setAnnotationsShowing] = useState(false)
   const [beforeImageShowing, setBeforeImageShowing] = useState(false)
 
   const resetImages = () => {
@@ -33,10 +33,10 @@ const TaskPage: React.FC = () => {
     zoomableImageRef2.current?.resetZoom();
   };
   const switchAnnotations = () => {
-    if(predisasterShowing){
-      setpredisasterShowing(false)
+    if(annotationsShowing){
+      setAnnotationsShowing(false)
     }else{
-      setpredisasterShowing(true)
+      setAnnotationsShowing(true)
     }
   };
 
@@ -97,10 +97,30 @@ return (
         >
         <a style={{color: 'white'}}> Reset Image Zooms  </a>
         </button>
-        {predisasterShowing ? (
+        {annotationsShowing ? (
           <div>
             <button 
             onClick={() => switchAnnotations()} 
+            style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
+            >
+            <a style={{color: 'white'}}> Show Image Annotations  </a>
+            </button>
+          </div>
+        ) : (
+          <div>
+            <button 
+            onClick={() => switchAnnotations()} 
+            style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
+            >
+            <a style={{color: 'white'}}> Hide Image Annotations  </a>
+            </button>
+          </div>
+        )
+        }
+        {beforeImageShowing ? (
+          <div>
+            <button 
+            onClick={() => switchBeforeImage()} 
             style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
             >
             <a style={{color: 'white'}}> Show Pre-Disaster Image  </a>
@@ -109,7 +129,7 @@ return (
         ) : (
           <div>
             <button 
-            onClick={() => switchAnnotations()} 
+            onClick={() => switchBeforeImage()} 
             style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
             >
             <a style={{color: 'white'}}> Show Post-Disaster Image  </a>
@@ -132,11 +152,8 @@ return (
             <h4><label>Water Damage</label></h4>
             <input disabled={isSubmitted} type="range" className="form-range" min="0" max="100" step="1" />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '-10px' }}>
-                <span>1</span>
-                <span>2</span>
-                <span>3</span>
-                <span>4</span>
-                <span>5</span>
+                <span>Low</span>
+                <span>High</span>
             </div>
             </div>
             
@@ -171,10 +188,10 @@ return (
             <div>
             </div>
         </div>
-        {predisasterShowing ? (
+        {annotationsShowing ? (
           <div> 
-            <ZoomableImage ref={zoomableImageRef1} image={originalImages[0]} altText="Image 1" />
-            <ZoomableImage ref={zoomableImageRef2} image={originalImages[1]} altText="Image 2" />
+            <ZoomableImage ref={zoomableImageRef1} image={annotatedImages[0]} altText="Image 1" />
+            <ZoomableImage ref={zoomableImageRef2} image={annotatedImages[1]} altText="Image 2" />
           </div>
         ) : (
           <div> 
