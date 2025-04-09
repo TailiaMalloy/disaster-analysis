@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import useImagePreloader from '../components/useImagePreloader.tsx';
+import {useImagePreloader} from '../components/useImagePreloader.tsx';
 import AlertConfirmation, { alertConfirmationHandle } from "../components/alertConfirmation.tsx";
 import ZoomableImage, {ZoomableImageHandle} from '../components/zoomableImage.tsx'
 const url = import.meta.env.VITE_BLOB_URL

@@ -1,32 +1,43 @@
 import React, { useRef, useState } from "react";
-import useImagePreloader from '../components/useImagePreloader.tsx';
+import {useImagePreloader} from '../components/useImagePreloader.tsx';
 import AlertConfirmation, { alertConfirmationHandle } from "../components/alertConfirmation.tsx";
 import ZoomableImage, {ZoomableImageHandle} from '../components/zoomableImage.tsx'
 const url = import.meta.env.VITE_BLOB_URL
 const token = import.meta.env.VITE_SAS_TOKEN
-const annotatedPath = '/disaster-analysis/stimuli/data_original/train/1002-Boca-Grande.2/'
-const originalPath = '/disaster-analysis/stimuli/data_annotated/train/1002-Boca-Grande.2/'
 
-const annotatedImagesList: string[] = Array.from({ length: 5 }, (_, i) => 
-  `${url}${annotatedPath}stimuli_${i}.png?${token}`
+//https://disasteranalysis.blob.core.windows.net/disaster-analysis/Stimulus/Satellite/stim0%7D.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-11-08T22:18:28Z&st=2025-03-25T13:18:28Z&sip=0.0.0.0-255.255.255.255&spr=https&sig=8dre37EhqprjpZn4Qqv8rdL4uhaIYUoNy%2BLjGEOC1s8%3D
+
+// https://disasteranalysis.blob.core.windows.net/disaster-analysis/Stimulus/Satellite/stim1.png?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-11-08T22:18:28Z&st=2025-03-25T13:18:28Z&sip=0.0.0.0-255.255.255.255&spr=https&sig=8dre37EhqprjpZn4Qqv8rdL4uhaIYUoNy%2BLjGEOC1s8%3D
+let droneImageList: string[] = Array.from({length: 15}, (_, i) => 
+  `${url}/disaster-analysis/Stimulus/Drone/stim${i+1}.png?${token}`
 );
 
-const originalImagesList: string[] = Array.from({ length: 5 }, (_, i) => 
-    `${url}${originalPath}stimuli_${i}.png?${token}`
+let satelliteImageList: string[] = Array.from({length: 15}, (_, i) => 
+    `${url}/disaster-analysis/Stimulus/Satellite/stim${i+1}.png?${token}`
   );
 
+let combinedImageList: string[] = Array.from({length: 15}, (_, i) => 
+  `${url}/disaster-analysis/Stimulus/Combined/stim${i+1}.png?${token}`
+);
 
 const TaskPage: React.FC = () => {
-  const { imagesPreloaded: annotatedImages } = useImagePreloader(annotatedImagesList);
-  const { imagesPreloaded: originalImages } = useImagePreloader(originalImagesList);
+  droneImageList.sort()
+  satelliteImageList.sort()
+  combinedImageList.sort()
+
+  const { imagesPreloaded: droneImages } = useImagePreloader(droneImageList);
+  const { imagesPreloaded: satImages } = useImagePreloader(satelliteImageList);
+  const { imagesPreloaded: combinedImages} = useImagePreloader(combinedImageList);
+  
+  console.log(droneImages)
 
   const zoomableImageRef1 = useRef<ZoomableImageHandle>(null);
   const zoomableImageRef2 = useRef<ZoomableImageHandle>(null);
   const alertConfirmation = useRef<alertConfirmationHandle>(null);
 
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [annotationsShowing, setAnnotationsShowing] = useState(false)
-  const [beforeImageShowing, setBeforeImageShowing] = useState(false)
+  const [annotationsShowing, setAnnotationsShowing] = useState(true)
+  const [beforeImageShowing, setBeforeImageShowing] = useState(true)
 
   const resetImages = () => {
     zoomableImageRef1.current?.resetZoom();
@@ -76,15 +87,15 @@ const TaskPage: React.FC = () => {
   }
 
 return (
-  <div style={{ paddingLeft: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+  <div style={{ paddingTop: '60px', paddingLeft: '0px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
     { isSubmitted ?
       (
-        <div style={{paddingLeft:'200px', paddingRight:'200px'}}>
-          <h1>Select which of the highlighted structures you would prioritize for additional damage assessment:</h1>
+        <div style={{paddingLeft:'325px', paddingRight:'325px'}}>
+          <h2>Select which of the highlighted structures you would prioritize for additional damage assessment:</h2>
         </div>
       ) : (
-        <div style={{paddingLeft:'200px', paddingRight:'200px'}}>
-          <h1>Evaluate the level of damage of the highlighted structure with respect to the following damage types:</h1>
+        <div style={{paddingLeft:'325px', paddingRight:'325px'}}>
+          <h2>Evaluate the level of damage to the property in the middle of the image with respect to the following damage types:</h2>
           </div>
       )
     }
@@ -97,33 +108,13 @@ return (
         >
         <a style={{color: 'white'}}> Reset Image Zooms  </a>
         </button>
-        {annotationsShowing ? (
-          <div>
-            <button 
-            onClick={() => switchAnnotations()} 
-            style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
-            >
-            <a style={{color: 'white'}}> Show Image Annotations  </a>
-            </button>
-          </div>
-        ) : (
-          <div>
-            <button 
-            onClick={() => switchAnnotations()} 
-            style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
-            >
-            <a style={{color: 'white'}}> Hide Image Annotations  </a>
-            </button>
-          </div>
-        )
-        }
         {beforeImageShowing ? (
           <div>
             <button 
             onClick={() => switchBeforeImage()} 
             style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
             >
-            <a style={{color: 'white'}}> Show Pre-Disaster Image  </a>
+            <a style={{color: 'white'}}> Show Pre Disaster  </a>
             </button>
           </div>
         ) : (
@@ -132,11 +123,12 @@ return (
             onClick={() => switchBeforeImage()} 
             style={{ padding: '10px 20px', borderRadius: '8px',  cursor: 'pointer', width: '256px' }}
             >
-            <a style={{color: 'white'}}> Show Post-Disaster Image  </a>
+            <a style={{color: 'white'}}> Show Post Disaster  </a>
             </button>
           </div>
         )
         }
+
         
     </div>
 
@@ -149,96 +141,122 @@ return (
          }}>
             {/* Range Bar 1 */}
             <div>
-            <h4><label>Water Damage</label></h4>
-            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="100" step="1" />
+            <h4><label>Non-Building Property Damage</label></h4>
+            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="4" step="1" />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '-10px' }}>
-                <span>Low</span>
-                <span>High</span>
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
             </div>
             </div>
             
             {/* Range Bar 3 */}
             <div>
-            <h4><label>Physical Damage to Structures</label></h4>
-            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="100" step="1" />
+            <h4><label>Damage from Debris</label></h4>
+            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="4" step="1" />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '-10px' }}>
-                <span>Low</span>
-                <span>High</span>
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
             </div>
             </div>
             
             {/* Range Bar 4 */}
             <div>
             <h4><label>Damage that Prevents Access</label></h4>
-            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="100" step="1" />
+            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="4" step="1" />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '-10px' }}>
-                <span>Low</span>
-                <span>High</span>
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
             </div>
             </div>
 
             <div>
-            <h4><label>Overall Damage</label></h4>
-            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="100" step="1" />
+            <h4><label>Damage to Structures</label></h4>
+            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="4" step="1" />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '-10px' }}>
-                <span>Low</span>
-                <span>High</span>
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
             </div>
             </div>
             <div>
             </div>
         </div>
-        {annotationsShowing ? (
-          <div> 
-            <ZoomableImage ref={zoomableImageRef1} image={annotatedImages[0]} altText="Image 1" />
-            <ZoomableImage ref={zoomableImageRef2} image={annotatedImages[1]} altText="Image 2" />
+        {beforeImageShowing ? (
+          <div>
+            <ZoomableImage ref={zoomableImageRef1} image={droneImages[12]} altText="Image 1" />
+            <ZoomableImage ref={zoomableImageRef2} image={droneImages[4]} altText="Image 2" />
           </div>
         ) : (
-          <div> 
-            <ZoomableImage ref={zoomableImageRef1} image={originalImages[0]} altText="Image 1" />
-            <ZoomableImage ref={zoomableImageRef2} image={originalImages[1]} altText="Image 2" />
+          <div>
+            <ZoomableImage ref={zoomableImageRef1} image={satImages[12]} altText="Image 1" />
+            <ZoomableImage ref={zoomableImageRef2} image={satImages[4]} altText="Image 2" />
           </div>
         )}
+        
+        
         
 
         {/* Range Bars Container */}
         <div style={{ width: '256px', display: 'flex', flexDirection: 'column', gap: '15px', marginLeft: '20px' }}>
             {/* Range Bar 1 */}
             <div>
-            <h4><label>Water Damage</label></h4>
-            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="100" step="1" />
+            <h4><label>Non-Building Property Damage</label></h4>
+            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="4" step="1" />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '-10px' }}>
-                <span>Low</span>
-                <span>High</span>
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
             </div>
             </div>
             
             {/* Range Bar 3 */}
             <div>
-            <h4><label>Physical Damage to Structures</label></h4>
-            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="100" step="1" />
+            <h4><label>Damage from Debris</label></h4>
+            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="4" step="1" />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '-10px' }}>
-                <span>Low</span>
-                <span>High</span>
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
             </div>
             </div>
             
             {/* Range Bar 4 */}
             <div>
             <h4><label>Damage that Prevents Access</label></h4>
-            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="100" step="1" />
+            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="4" step="1" />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '-10px' }}>
-                <span>Low</span>
-                <span>High</span>
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
             </div>
             </div>
 
             <div>
-            <h4><label>Overall Damage</label></h4>
-            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="100" step="1" />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '-10px' }}>
-                <span>Low</span>
-                <span>High</span>
+            <h4><label>Damage to Structures</label></h4>
+            <input disabled={isSubmitted} type="range" className="form-range" min="0" max="4" step="1" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '-10px'}}>
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
             </div>
             </div>
             <div>
@@ -252,14 +270,14 @@ return (
           <button 
           onClick={() => select()} 
           className="btn btn-primary"
-          style={{padding: '10px 20px', marginRight:'-20px', borderRadius: '8px', cursor: 'pointer', width: '350px' }}
+          style={{padding: '10px 20px', marginRight:'-20px', borderRadius: '8px', cursor: 'pointer', width: '325px' }}
           >
           Select Image 1
           </button>
           <button 
           onClick={() => select()} 
           className="btn btn-primary"
-          style={{padding: '10px 20px', marginLeft:'40px', borderRadius: '8px', cursor: 'pointer', width: '350px' }}
+          style={{padding: '10px 20px', marginLeft:'40px', borderRadius: '8px', cursor: 'pointer', width: '325px' }}
           >
           Select Image 2
           </button>

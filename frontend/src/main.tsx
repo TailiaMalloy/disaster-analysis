@@ -4,13 +4,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import TaskPage from './pages/TaskPage.tsx'
 import QuestionnairePage from './pages/QuestionnairePage.tsx'
+import ConsentPage from './pages/ConsentPage.tsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<TaskPage />} />
+        <Route path="/" element={<ConsentPage />} />
         <Route path="/Task" element={<TaskPage />} />
         <Route path="/Questionnaire" element={<QuestionnairePage />} />
       </Routes>
